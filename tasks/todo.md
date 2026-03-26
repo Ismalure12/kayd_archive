@@ -26,12 +26,18 @@
 - [ ] Add request body validation on required fields in controllers (backend rules: validate before controllers)
 - [ ] Audit admin endpoints — ensure they don't return raw Prisma objects with sensitive fields
 
-## Phase 4: Ready to Run (pending DB setup)
-- [ ] Update `.env` with real PostgreSQL `DATABASE_URL`
-- [ ] Run `npm run db:migrate -- --name init`
-- [ ] Run `npm run db:generate`
-- [ ] Run `npm run seed`
-- [ ] Run `npm run dev` and verify `GET /health`
+## Phase 4: Ready to Run ✅
+- [x] Update `.env` with real PostgreSQL `DATABASE_URL` (Xata)
+- [x] Run migration
+- [x] Run seed — admin@kayd.so / admin123, 2 authors, 4 tags, 3 stories, 1 collection
+- [x] `GET /health` confirmed working
+
+## Phase 4b: API Tests ✅
+- [x] Install Jest + Supertest
+- [x] Split app.js from server.js for testability
+- [x] 6 test files, 45 tests — all passing
+  - health, public endpoints, auth, admin authors, admin stories (+ XSS), admin dashboard/tags/collections
+- [x] Test data self-cleans via `test-` slug prefix + afterAll cleanup
 
 ## Phase 5: Frontend (Next.js) — Not Started
 - [ ] Scaffold Next.js app in `/frontend`
