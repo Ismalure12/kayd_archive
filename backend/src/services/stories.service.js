@@ -5,11 +5,24 @@ const { sanitizeContent } = require('../utils/sanitize');
 
 const PUBLIC_STORY_SELECT = {
   id: true, title: true, titleSomali: true, slug: true,
-  description: true, coverImageUrl: true, readingTime: true,
+  description: true, content: true, coverImageUrl: true, readingTime: true,
   language: true, publishedDate: true, viewCount: true, createdAt: true,
   author: { select: { id: true, name: true, nameSomali: true, slug: true, photoUrl: true } },
   tags: { include: { tag: true } },
 };
+
+function extractExcerpt(html, maxLength = 160) {
+  if (!html) return null;
+  const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (text.length <= maxLength) return text;
+  const trimmed = text.slice(0, maxLength);
+  return trimmed.slice(0, trimmed.lastIndexOf(' ') || maxLength) + '…';
+}
+
+function withExcerpt(story) {
+  const { content, ...rest } = story;
+  return { ...rest, excerpt: extractExcerpt(content) };
+}
 
 async function listStories({ page, limit, skip, tag, authorSlug, language }) {
   const where = { isPublished: true };
@@ -22,7 +35,7 @@ async function listStories({ page, limit, skip, tag, authorSlug, language }) {
     prisma.story.count({ where }),
   ]);
 
-  return { stories, total };
+  return { stories: stories.map(withExcerpt), total };
 }
 
 async function getStoryBySlug(slug) {

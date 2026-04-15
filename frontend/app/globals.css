@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* Colors */
+  --color-bg: #F5F0E8;
+  --color-card: #FAF7F2;
+  --color-terracotta: #C4633E;
+  --color-terracotta-dark: #A8502D;
+  --color-terracotta-light: #F5E8E2;
+  --color-text: #2C2420;
+  --color-text-secondary: #6B5E54;
+  --color-muted: #A69B91;
+  --color-border: #DDD5CA;
+  --color-dark-bg: #1C1917;
+  --color-dark-card: #2A2420;
+
+  /* Fonts */
+  --font-serif: var(--font-lora), Georgia, serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+:root {
+  --background: #F5F0E8;
+  --foreground: #2C2420;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Prose overrides for story reader */
+.prose {
+  --tw-prose-body: #2C2420;
+  --tw-prose-headings: #2C2420;
+  --tw-prose-links: #C4633E;
+  --tw-prose-bold: #2C2420;
+  --tw-prose-counters: #6B5E54;
+  --tw-prose-bullets: #A69B91;
+  --tw-prose-hr: #DDD5CA;
+  --tw-prose-quotes: #2C2420;
+  --tw-prose-quote-borders: #C4633E;
+  --tw-prose-captions: #6B5E54;
+}
+
+/* Drop cap — first letter of first paragraph in story body */
+.story-body > p:first-child::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 0.75;
+  margin-right: 0.1em;
+  margin-top: 0.05em;
+  color: #C4633E;
+}

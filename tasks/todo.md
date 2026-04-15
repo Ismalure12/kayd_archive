@@ -39,10 +39,20 @@
   - health, public endpoints, auth, admin authors, admin stories (+ XSS), admin dashboard/tags/collections
 - [x] Test data self-cleans via `test-` slug prefix + afterAll cleanup
 
-## Phase 5: Frontend (Next.js) — Not Started
-- [ ] Scaffold Next.js app in `/frontend`
-- [ ] Reader pages: home, author list, author detail, story list, story reader
-- [ ] Admin panel: login, dashboard, author CRUD, story editor (Tiptap), collections
+## Phase 5: Frontend (Next.js) — Complete ✅
+- [x] Scaffold Next.js 16 app in `/frontend` (TypeScript, Tailwind v4, App Router)
+- [x] Install Tiptap, @tailwindcss/typography
+- [x] Design tokens in CSS @theme (Tailwind v4 pattern)
+- [x] Lora + DM Sans fonts via next/font/google
+- [x] `lib/api.ts` — centralized fetch wrapper for public + admin APIs
+- [x] `hooks/useDebounce.ts`
+- [x] UI components: Button, Input/Textarea/Select, Pagination
+- [x] Reader components: StoryCard, AuthorCard, TagPill, SearchBar, SiteHeader, SiteFooter
+- [x] Admin components: AdminNav, AuthGuard, TiptapEditor, AuthorForm, StoryForm, CollectionForm
+- [x] Public pages: /, /stories, /stories/[slug], /authors, /authors/[slug], /collections, /collections/[slug], /search
+- [x] Admin pages: /admin/login, /admin/dashboard, /admin/authors, /admin/stories, /admin/tags, /admin/collections (+ new/edit)
+- [x] Design: editorial hero, drop cap, 680px reader measure, archival footer, small-caps author attribution
+- [x] Build passes: 22 routes, zero TypeScript errors
 
 ---
 

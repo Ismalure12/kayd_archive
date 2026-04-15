@@ -5,7 +5,16 @@
       "Bash(npm init:*)",
       "Bash(npm install:*)",
       "Bash(node:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npx create-next-app@latest frontend --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(rmdir \"C:/Users/hp/Desktop/projects/Kayd Archive/frontend/app/admin/stories/[id]/edit\")",
+      "Bash(rmdir \"C:/Users/hp/Desktop/projects/Kayd Archive/frontend/app/admin/stories/[id]\")",
+      "Bash(rmdir \"C:/Users/hp/Desktop/projects/Kayd Archive/frontend/app/admin/collections/[id]/edit\")",
+      "Bash(rmdir \"C:/Users/hp/Desktop/projects/Kayd Archive/frontend/app/admin/collections/[id]\")",
+      "Bash(pdftotext \"C:/Users/hp/Desktop/projects/Kayd Archive/Ibraahin-Hawd/Sheeko.pdf\" -)",
+      "Bash(npm run:*)",
+      "Bash(start http://localhost:3000)",
+      "Bash(start:*)"
     ]
   }
 }
