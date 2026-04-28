@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE = '/api';
 
 class ApiError extends Error {
   status: number;
@@ -65,6 +65,11 @@ export const api = {
   search: {
     query: (q: string) => request<any>(`/search?q=${encodeURIComponent(q)}`),
   },
+  murti: {
+    list: (params?: Record<string, string | number>) =>
+      request<any>(`/murti?${new URLSearchParams(params as any)}`),
+    get: (slug: string) => request<any>(`/murti/${slug}`),
+  },
 };
 
 // Admin endpoints (require auth token)
@@ -121,6 +126,17 @@ export const adminApi = {
       request<any>(`/admin/collections/${id}`, { method: 'PUT', body: JSON.stringify(data) }, true),
     delete: (id: string) =>
       request<any>(`/admin/collections/${id}`, { method: 'DELETE' }, true),
+  },
+  murti: {
+    list: (params?: Record<string, string | number>) =>
+      request<any>(`/admin/murti?${new URLSearchParams(params as any)}`, {}, true),
+    get: (id: string) => request<any>(`/admin/murti/${id}`, {}, true),
+    create: (data: any) =>
+      request<any>('/admin/murti', { method: 'POST', body: JSON.stringify(data) }, true),
+    update: (id: string, data: any) =>
+      request<any>(`/admin/murti/${id}`, { method: 'PUT', body: JSON.stringify(data) }, true),
+    delete: (id: string) =>
+      request<any>(`/admin/murti/${id}`, { method: 'DELETE' }, true),
   },
 };
 

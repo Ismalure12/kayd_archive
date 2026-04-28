@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { adminApi } from '@/lib/api';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('admin@kayd.so');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,7 +16,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const res = await adminApi.auth.login(email, password);
       if (res.data?.token) {
@@ -34,47 +32,65 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="font-serif text-3xl font-bold text-text">Kayd</h1>
-          <p className="text-text-secondary mt-2 text-sm">Admin login</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-paper p-6">
+      <div className="w-[380px] bg-paper border border-ink p-12">
+        {/* Wordmark */}
+        <Link href="/" className="flex items-center justify-center gap-1.5 mb-8 no-underline">
+          <span className="font-display text-[40px] tracking-[-0.03em] text-ink">
+            K<em className="italic text-accent-ink">ay</em>d
+          </span>
+          <span
+            className="inline-block w-[7px] h-[7px] rounded-full bg-accent"
+            style={{ transform: 'translateY(-6px)' }}
+          />
+        </Link>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-card border border-border rounded-xl p-8 flex flex-col gap-5"
-        >
-          <Input
-            id="email"
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@kayd.so"
-            required
-            autoFocus
-          />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-          />
+        <div className="mono text-center mb-8 text-[10px]">Admin Console</div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="mono block mb-1 text-[10px]">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoFocus
+              className="w-full px-2.5 py-1.5 bg-paper border border-rule font-body text-[14px] text-ink outline-none focus:border-ink transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="mono block mb-1 text-[10px]">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full px-2.5 py-1.5 bg-paper border border-rule font-body text-[14px] text-ink outline-none focus:border-ink transition-colors"
+            />
+          </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <div className="mono text-[10px] py-2" style={{ color: 'oklch(0.52 0.18 25)' }}>
               {error}
-            </p>
+            </div>
           )}
 
-          <Button type="submit" disabled={loading} className="w-full mt-1" size="lg">
-            {loading ? 'Signing in…' : 'Sign in'}
-          </Button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn w-full justify-center mt-2"
+          >
+            {loading ? 'Signing in…' : 'Sign in ⟶'}
+          </button>
         </form>
+
+        <div className="mono text-[10px] text-center mt-6 text-ink-3">
+          Reader access requires no account.{' '}
+          <Link href="/" className="text-accent-ink">Back to archive</Link>
+        </div>
       </div>
     </div>
   );

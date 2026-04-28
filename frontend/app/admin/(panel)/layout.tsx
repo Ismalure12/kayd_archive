@@ -4,9 +4,9 @@ import { AuthGuard } from '@/components/admin/AuthGuard';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>
-      <div className="flex min-h-screen">
+      <div className="admin-shell">
         <AdminNav />
-        <div className="flex-1 bg-bg overflow-auto">
+        <div className="bg-paper overflow-x-auto">
           {children}
         </div>
       </div>

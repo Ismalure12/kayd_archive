@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: '◎' },
-  { href: '/admin/stories', label: 'Stories', icon: '✦' },
-  { href: '/admin/authors', label: 'Authors', icon: '◈' },
-  { href: '/admin/collections', label: 'Collections', icon: '◻' },
-  { href: '/admin/tags', label: 'Tags', icon: '⬡' },
+  { href: '/admin/dashboard', label: 'Dashboard', hint: 'Overview' },
+  { href: '/admin/stories', label: 'Stories', hint: '' },
+  { href: '/admin/authors', label: 'Authors', hint: '' },
+  { href: '/admin/collections', label: 'Collections', hint: '' },
+  { href: '/admin/murti', label: 'Murti', hint: '' },
+  { href: '/admin/tags', label: 'Tags', hint: '' },
 ];
 
 export function AdminNav() {
@@ -21,41 +22,61 @@ export function AdminNav() {
   }
 
   return (
-    <aside className="w-56 bg-dark-bg text-white flex flex-col min-h-screen shrink-0">
-      <div className="px-5 py-6 border-b border-white/10">
-        <Link href="/" className="font-serif text-lg font-bold text-white hover:text-terracotta transition-colors">
-          Kayd
+    <aside className="border-r border-rule p-4 flex flex-col bg-paper-2 sticky top-0 h-screen">
+      {/* Brand */}
+      <div className="pb-6 border-b border-rule mb-4">
+        <Link href="/" className="no-underline">
+          <span className="font-display text-[24px] tracking-[-0.03em] text-ink">
+            K<em className="italic text-accent-ink">ay</em>d
+          </span>
+          <span
+            className="inline-block w-[5px] h-[5px] rounded-full bg-accent ml-1.5"
+            style={{ transform: 'translateY(-4px)' }}
+          />
         </Link>
-        <p className="text-xs text-white/40 mt-0.5">Admin Panel</p>
+        <div className="mono mt-1.5 text-[9px] text-ink-3">
+          Admin Console
+        </div>
       </div>
 
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
+      {/* Nav links */}
+      <nav className="flex flex-col gap-0.5 flex-1">
         {NAV_ITEMS.map((item) => {
           const active = pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                active
-                  ? 'bg-terracotta text-white font-medium'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
+              className={active ? '' : 'admin-nav-link-item'}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '10px 12px',
+                fontFamily: 'var(--ff-display)',
+                fontSize: '18px',
+                color: active ? 'var(--ink)' : 'var(--ink-2)',
+                borderLeft: `2px solid ${active ? 'var(--accent)' : 'transparent'}`,
+                background: active ? 'var(--paper-3)' : 'transparent',
+                textDecoration: 'none',
+                transition: 'all 0.15s',
+              }}
             >
-              <span className="text-xs">{item.icon}</span>
-              {item.label}
+              <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="px-3 pb-4 border-t border-white/10 pt-4">
+      {/* Footer */}
+      <div className="border-t border-rule pt-4 mt-2">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+          className="mono text-[10px] text-ink-3 inline-block cursor-pointer bg-transparent border-none"
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--accent-ink)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--ink-3)'; }}
         >
-          <span className="text-xs">→</span>
-          Logout
+          ⎋ Sign out
         </button>
       </div>
     </aside>

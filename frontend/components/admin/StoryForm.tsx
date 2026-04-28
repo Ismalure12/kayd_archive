@@ -25,6 +25,8 @@ export function StoryForm({ initial, mode }: StoryFormProps) {
     language: initial?.language || 'SOMALI',
     coverImageUrl: initial?.coverImageUrl || '',
     isPublished: initial?.isPublished ?? false,
+    status: initial?.status || 'DRAFT',
+    isFeatured: initial?.isFeatured ?? false,
     slug: initial?.slug || '',
     selectedTagIds: (initial?.tags?.map((t: any) => t.tag.id) || []) as string[],
   });
@@ -70,7 +72,9 @@ export function StoryForm({ initial, mode }: StoryFormProps) {
       content: form.content,
       authorId: form.authorId,
       language: form.language,
-      isPublished: form.isPublished,
+      isPublished: form.status === 'PUBLISHED',
+      status: form.status,
+      isFeatured: form.isFeatured,
       tagIds: form.selectedTagIds,
     };
     if (form.titleSomali.trim()) data.titleSomali = form.titleSomali.trim();
@@ -102,6 +106,12 @@ export function StoryForm({ initial, mode }: StoryFormProps) {
     { value: 'SOMALI', label: 'Somali' },
     { value: 'ENGLISH', label: 'English' },
     { value: 'BOTH', label: 'Both' },
+  ];
+
+  const statusOptions = [
+    { value: 'DRAFT', label: 'Draft' },
+    { value: 'REVIEW', label: 'In Review' },
+    { value: 'PUBLISHED', label: 'Published' },
   ];
 
   return (
@@ -199,14 +209,25 @@ export function StoryForm({ initial, mode }: StoryFormProps) {
         </div>
       )}
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <Select
+          id="status"
+          label="Status"
+          value={form.status}
+          onChange={(e) => set('status', e.target.value)}
+          options={statusOptions}
+        />
+        <div />
+      </div>
+
       <label className="flex items-center gap-3 cursor-pointer">
         <input
           type="checkbox"
-          checked={form.isPublished}
-          onChange={(e) => set('isPublished', e.target.checked)}
+          checked={form.isFeatured}
+          onChange={(e) => set('isFeatured', e.target.checked)}
           className="w-4 h-4 accent-terracotta"
         />
-        <span className="text-sm font-medium text-text">Publish this story</span>
+        <span className="text-sm font-medium text-text">Featured story</span>
       </label>
 
       {error && (

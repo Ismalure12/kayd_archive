@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { StoryCard } from '@/components/reader/StoryCard';
+import { StoryRow } from '@/components/reader/StoryRow';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { getCollectionBySlug } = require('@/lib/services/collections.service');
 
 async function getCollection(slug: string) {
-  const res = await fetch(`${API}/collections/${slug}`, { next: { revalidate: 300 } });
-  if (!res.ok) return null;
-  const json = await res.json();
-  return json.success ? json.data : null;
+  try {
+    return await getCollectionBySlug(slug);
+  } catch {
+    return null;
+  }
 }
 
 interface PageProps {
@@ -37,46 +39,49 @@ export default async function CollectionPage({ params }: PageProps) {
 
   return (
     <div>
-      <div className="bg-card border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <nav className="flex items-center gap-2 text-sm text-muted mb-6">
-            <Link href="/" className="hover:text-text transition-colors">Home</Link>
+      {/* Header */}
+      <div className="bg-paper-2 border-b border-rule">
+        <div className="max-w-[1240px] mx-auto px-8 sm:px-6 py-10">
+          <nav className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-3 mb-6">
+            <Link href="/" className="hover:text-ink transition-colors">Home</Link>
             <span>/</span>
-            <Link href="/collections" className="hover:text-text transition-colors">Collections</Link>
+            <Link href="/collections" className="hover:text-ink transition-colors">Collections</Link>
           </nav>
 
           {collection.isFeatured && (
-            <span className="inline-block text-xs text-terracotta font-medium uppercase tracking-wider mb-2">
+            <span className="inline-block font-mono text-[10px] text-accent-ink uppercase tracking-[0.12em] mb-2">
               Featured Collection
             </span>
           )}
 
-          <h1 className="font-serif text-3xl font-bold text-text">{collection.title}</h1>
+          <h1 className="font-display text-[40px] leading-[1.05] tracking-[-0.02em] font-normal text-ink">
+            {collection.title}
+          </h1>
           {collection.titleSomali && collection.titleSomali !== collection.title && (
-            <p className="font-serif text-xl text-text-secondary mt-1">{collection.titleSomali}</p>
+            <p className="font-display italic text-[22px] text-ink-3 mt-1">{collection.titleSomali}</p>
           )}
           {collection.description && (
-            <p className="text-text-secondary mt-3 leading-relaxed max-w-2xl">
+            <p className="font-body text-[17px] text-ink-2 mt-3 leading-[1.6] max-w-[56ch]">
               {collection.description}
             </p>
           )}
-          <p className="text-sm text-muted mt-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-3 mt-3">
             {publishedStories.length}{' '}
             {publishedStories.length === 1 ? 'story' : 'stories'}
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-[1240px] mx-auto px-8 sm:px-6 py-10">
         {publishedStories.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {publishedStories.map((story: any) => (
-              <StoryCard key={story.slug} story={story} />
+          <div className="story-list">
+            {publishedStories.map((story: any, i: number) => (
+              <StoryRow key={story.slug} story={story} index={i} />
             ))}
           </div>
         ) : (
           <div className="text-center py-20">
-            <p className="text-text-secondary">No published stories in this collection yet.</p>
+            <p className="font-display italic text-[32px] text-ink-3">No published stories yet.</p>
           </div>
         )}
       </div>

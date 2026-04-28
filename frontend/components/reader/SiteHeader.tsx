@@ -1,46 +1,80 @@
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function SiteHeader() {
   return (
-    <header className="bg-bg border-b border-border sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="font-serif italic text-xl font-bold text-text tracking-tight">Kayd</span>
-            <span className="hidden sm:block text-xs text-muted border-l border-border pl-3 leading-none">
-              Somali Literary Archive
+    <header
+      className="sticky top-0 z-50 border-b border-rule"
+      style={{
+        background: 'color-mix(in oklch, var(--paper) 92%, transparent)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+      }}
+    >
+      <div className="max-w-[1240px] mx-auto px-8 sm:px-6">
+        <div className="flex items-baseline justify-between py-4 gap-12">
+          {/* Wordmark */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0" style={{ textDecoration: 'none' }}>
+            <span
+              style={{
+                fontFamily: 'var(--ff-display)',
+                fontSize: '28px',
+                letterSpacing: '-0.03em',
+                lineHeight: 1,
+                color: 'var(--ink)',
+              }}
+            >
+              K<em style={{ fontStyle: 'italic', color: 'var(--accent-ink)' }}>ay</em>d
+            </span>
+            <span
+              style={{
+                width: 6, height: 6,
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                display: 'inline-block',
+                transform: 'translateY(-5px)',
+                flexShrink: 0,
+              }}
+            />
+            <span
+              className="hidden sm:block"
+              style={{
+                fontFamily: 'var(--ff-mono)',
+                fontSize: '9px',
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'var(--ink-3)',
+                marginLeft: 2,
+              }}
+            >
+              Digital Somali Literary Archive
             </span>
           </Link>
 
-          <nav className="flex items-center gap-1">
-            <Link
-              href="/stories"
-              className="px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors"
-            >
-              Stories
+          {/* Nav */}
+          <nav
+            className="flex items-center gap-8"
+            style={{
+              fontFamily: 'var(--ff-mono)',
+              fontSize: '11px',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {[
+              { href: '/stories', label: 'Stories' },
+              { href: '/authors', label: 'Authors' },
+              { href: '/collections', label: 'Collections' },
+              { href: '/murti', label: 'Murti' },
+            ].map(({ href, label }) => (
+              <Link key={href} href={href} className="nav-link">
+                {label}
+              </Link>
+            ))}
+            <Link href="/admin/dashboard" className="nav-link-muted">
+              Admin
             </Link>
-            <Link
-              href="/authors"
-              className="px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors"
-            >
-              Authors
-            </Link>
-            <Link
-              href="/collections"
-              className="px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors"
-            >
-              Collections
-            </Link>
-            <Link
-              href="/search"
-              className="px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors"
-              aria-label="Search"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </Link>
+            <ThemeToggle />
           </nav>
         </div>
       </div>

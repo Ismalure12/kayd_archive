@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { StoryCard } from '@/components/reader/StoryCard';
+import { StoryRow } from '@/components/reader/StoryRow';
 import { AuthorCard } from '@/components/reader/AuthorCard';
 import { SearchBar } from '@/components/reader/SearchBar';
 
@@ -8,14 +8,12 @@ export const metadata: Metadata = {
   description: 'Search Somali stories and authors on Kayd.',
 };
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { search: searchService } = require('@/lib/services/search.service');
+
 async function search(q: string) {
   if (!q.trim()) return null;
-  const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-  const res = await fetch(`${API}/search?q=${encodeURIComponent(q)}`, {
-    next: { revalidate: 0 },
-  });
-  const json = await res.json();
-  return json.success ? json.data : null;
+  return await searchService(q);
 }
 
 interface PageProps {
@@ -31,38 +29,49 @@ export default async function SearchPage({ searchParams }: PageProps) {
     results && (results.stories?.length > 0 || results.authors?.length > 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <h1 className="font-serif text-3xl font-bold text-text mb-6">Search</h1>
-
-      <SearchBar defaultValue={q} className="max-w-2xl mb-8" />
+    <div className="max-w-[1240px] mx-auto px-8 sm:px-6 pt-12">
+      <div className="mb-6">
+        <div className="mono mb-3">Search</div>
+        <h1
+          className="font-display font-normal leading-[0.95] tracking-[-0.025em] mb-6"
+          style={{ fontSize: 'clamp(48px, 7vw, 88px)' }}
+        >
+          Find{' '}
+          <em className="italic text-accent-ink">anything</em>
+        </h1>
+        <SearchBar defaultValue={q} />
+      </div>
 
       {q && !hasResults && (
-        <div className="text-center py-16">
-          <p className="text-text-secondary">
-            No results for <strong>&ldquo;{q}&rdquo;</strong>.
-          </p>
+        <div className="text-center py-16 font-body text-ink-2">
+          No results for <strong>&ldquo;{q}&rdquo;</strong>.
         </div>
       )}
 
       {results?.stories?.length > 0 && (
         <section className="mb-10">
-          <h2 className="font-serif text-xl font-bold text-text mb-4">
-            Stories ({results.stories.length})
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.stories.map((story: any) => (
-              <StoryCard key={story.slug} story={story} />
+          <div className="flex justify-between items-baseline mb-2 pb-3 border-b border-ink font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3">
+            <span>Stories</span>
+            <span>{results.stories.length} found</span>
+          </div>
+          <div className="story-list">
+            {results.stories.map((story: any, i: number) => (
+              <StoryRow key={story.slug} story={story} index={i} />
             ))}
           </div>
         </section>
       )}
 
       {results?.authors?.length > 0 && (
-        <section>
-          <h2 className="font-serif text-xl font-bold text-text mb-4">
-            Authors ({results.authors.length})
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <section className="mb-10">
+          <div className="flex justify-between items-baseline mb-8 pb-3 border-b border-ink font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3">
+            <span>Authors</span>
+            <span>{results.authors.length} found</span>
+          </div>
+          <div
+            className="author-grid-responsive"
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '48px 24px' }}
+          >
             {results.authors.map((author: any) => (
               <AuthorCard key={author.slug} author={author} />
             ))}
@@ -71,8 +80,8 @@ export default async function SearchPage({ searchParams }: PageProps) {
       )}
 
       {!q && (
-        <div className="text-center py-16 text-text-secondary">
-          <p>Type something to search stories and authors.</p>
+        <div className="text-center py-16 font-body italic text-ink-3">
+          Type something to search stories and authors.
         </div>
       )}
     </div>

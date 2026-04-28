@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '@/lib/api';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
 
 export default function AdminTagsPage() {
   const [tags, setTags] = useState<any[]>([]);
@@ -60,12 +59,15 @@ export default function AdminTagsPage() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="font-serif text-2xl font-bold text-text mb-6">Tags</h1>
+    <div className="px-12 py-8">
+      <div className="pb-6 border-b border-ink mb-8">
+        <div className="mono mb-1">Content</div>
+        <h1 className="font-display text-[56px] tracking-[-0.02em] leading-none font-normal">Tags</h1>
+      </div>
 
       {/* Create form */}
-      <form onSubmit={handleCreate} className="bg-card border border-border rounded-lg p-5 mb-6 max-w-lg">
-        <h2 className="text-sm font-semibold text-text mb-4">Add new tag</h2>
+      <form onSubmit={handleCreate} className="bg-paper-2 border border-rule p-5 mb-8 max-w-lg">
+        <div className="mono text-[10px] text-ink-3 mb-4">Add new tag</div>
         <div className="grid grid-cols-2 gap-3 mb-3">
           <Input
             id="tagName"
@@ -83,52 +85,50 @@ export default function AdminTagsPage() {
           />
         </div>
         {error && <p className="text-xs text-red-600 mb-3">{error}</p>}
-        <Button type="submit" disabled={creating || !newName.trim()} size="sm">
+        <button
+          type="submit"
+          disabled={creating || !newName.trim()}
+          className="btn"
+        >
           {creating ? 'Creating…' : 'Add Tag'}
-        </Button>
+        </button>
       </form>
 
       {/* Tag list */}
       {loading ? (
-        <div className="flex flex-wrap gap-2">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-8 w-24 bg-card border border-border rounded-full animate-pulse" />
-          ))}
-        </div>
+        <div className="mono py-12 text-center text-ink-3">Loading...</div>
       ) : tags.length === 0 ? (
-        <p className="text-text-secondary text-sm">No tags yet.</p>
+        <div className="mono text-ink-3 text-[11px]">No tags yet.</div>
       ) : (
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-bg">
-                <th className="text-left px-4 py-3 text-text-secondary font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-text-secondary font-medium">Somali Name</th>
-                <th className="text-left px-4 py-3 text-text-secondary font-medium">Slug</th>
-                <th className="text-right px-4 py-3 text-text-secondary font-medium">Actions</th>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Somali Name</th>
+              <th>Slug</th>
+              <th className="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tags.map((tag) => (
+              <tr key={tag.id}>
+                <td className="font-display text-[17px] text-ink">{tag.name}</td>
+                <td className="font-display italic text-ink-3 text-[15px]">{tag.nameSomali || '—'}</td>
+                <td className="mono text-ink-3 text-[10px]">{tag.slug}</td>
+                <td className="text-right">
+                  <button
+                    onClick={() => handleDelete(tag.id, tag.name)}
+                    disabled={deleting === tag.id}
+                    className="mono text-[10px] cursor-pointer bg-transparent border-none"
+                    style={{ color: 'oklch(0.52 0.18 25)' }}
+                  >
+                    {deleting === tag.id ? '…' : 'Delete'}
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {tags.map((tag) => (
-                <tr key={tag.id} className="border-b border-border last:border-0 hover:bg-bg/50">
-                  <td className="px-4 py-3 font-medium text-text">{tag.name}</td>
-                  <td className="px-4 py-3 text-text-secondary">{tag.nameSomali || '—'}</td>
-                  <td className="px-4 py-3 text-text-secondary">{tag.slug}</td>
-                  <td className="px-4 py-3 text-right">
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(tag.id, tag.name)}
-                      disabled={deleting === tag.id}
-                    >
-                      {deleting === tag.id ? '…' : 'Delete'}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

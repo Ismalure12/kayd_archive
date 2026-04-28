@@ -1,60 +1,65 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 interface Author {
   slug: string;
   name: string;
   nameSomali?: string;
-  bio?: string;
-  photoUrl?: string;
+  birthYear?: number;
+  deathYear?: number;
+  era?: string;
   _count?: { stories: number };
 }
 
-export function AuthorCard({ author }: { author: Author }) {
+interface AuthorCardProps {
+  author: Author;
+}
+
+export function AuthorCard({ author }: AuthorCardProps) {
   const initials = author.name
     .split(' ')
-    .map((n) => n[0])
+    .map((w) => w[0])
     .slice(0, 2)
-    .join('')
-    .toUpperCase();
+    .join('');
+
+  const storyCount = author._count?.stories ?? 0;
+  const years = author.birthYear
+    ? `${author.birthYear}${author.deathYear ? `–${author.deathYear}` : '–'}`
+    : null;
 
   return (
     <Link
       href={`/authors/${author.slug}`}
-      className="bg-card border border-border rounded-lg p-5 flex gap-4 items-start hover:shadow-sm transition-shadow group"
+      className="author-card-hover flex gap-4 items-start p-3 -m-3 rounded-sm transition-colors cursor-pointer no-underline text-inherit"
     >
-      <div className="shrink-0">
-        {author.photoUrl ? (
-          <Image
-            src={author.photoUrl}
-            alt={author.name}
-            width={56}
-            height={56}
-            className="w-14 h-14 rounded-full object-cover"
-          />
-        ) : (
-          <div className="w-14 h-14 rounded-full bg-terracotta flex items-center justify-center text-white font-serif font-semibold text-lg">
-            {initials}
-          </div>
-        )}
+      {/* Rectangular portrait with stripe + initials */}
+      <div className="portrait">
+        <div className="portrait-initials">{initials}</div>
       </div>
 
-      <div className="flex-1 min-w-0">
-        <h3 className="font-serif font-semibold text-text group-hover:text-terracotta transition-colors">
+      {/* Meta */}
+      <div className="flex flex-col min-w-0">
+        <div className="font-display text-[22px] leading-[1.15] tracking-[-0.01em] text-ink mb-1">
           {author.name}
-        </h3>
+        </div>
+
         {author.nameSomali && author.nameSomali !== author.name && (
-          <p className="text-sm text-text-secondary font-serif">{author.nameSomali}</p>
+          <div className="italic text-ink-3 text-[14px] font-display leading-[1.3] mb-2.5">
+            {author.nameSomali}
+          </div>
         )}
-        {author.bio && (
-          <p className="text-sm text-text-secondary mt-1 line-clamp-2 leading-relaxed">
-            {author.bio}
-          </p>
+
+        {(years || author.era) && (
+          <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3 leading-[1.4] mb-0.5">
+            {years && years}
+            {years && author.era && ' · '}
+            {author.era}
+          </div>
         )}
-        {author._count !== undefined && (
-          <p className="text-xs text-muted mt-2">
-            {author._count.stories} {author._count.stories === 1 ? 'story' : 'stories'}
-          </p>
+
+        {storyCount > 0 && (
+          <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-accent-ink leading-[1.4]">
+            {storyCount} {storyCount === 1 ? 'story' : 'stories'}
+          </div>
         )}
       </div>
     </Link>

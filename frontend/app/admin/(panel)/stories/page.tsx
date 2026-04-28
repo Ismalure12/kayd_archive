@@ -3,29 +3,33 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { adminApi } from '@/lib/api';
-import { Button } from '@/components/ui/Button';
+
+type StatusFilter = 'all' | 'published' | 'draft' | 'review';
 
 export default function AdminStoriesPage() {
   const [stories, setStories] = useState<any[]>([]);
-  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   async function load() {
     setLoading(true);
     try {
-      const res = await adminApi.stories.list({ limit: 50 });
+      const params: Record<string, string | number> = { limit: 50 };
+      if (search) params.search = search;
+      if (statusFilter !== 'all') params.status = statusFilter;
+      const res = await adminApi.stories.list(params);
       setStories(res.data || []);
-      setTotal(res.total || 0);
     } finally {
       setLoading(false);
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [search, statusFilter]);
 
   async function handleDelete(id: string, title: string) {
-    if (!confirm(`Delete story "${title}"? This cannot be undone.`)) return;
+    if (!confirm(`Delete story "${title}"?`)) return;
     setDeleting(id);
     try {
       await adminApi.stories.delete(id);
@@ -37,89 +41,102 @@ export default function AdminStoriesPage() {
     }
   }
 
+  const dotClass = (s: any) => {
+    const st = s.status || (s.isPublished ? 'PUBLISHED' : 'DRAFT');
+    return st === 'PUBLISHED' ? 'published' : st === 'REVIEW' ? 'review' : '';
+  };
+
+  const label = (s: any) => {
+    const st = s.status || (s.isPublished ? 'PUBLISHED' : 'DRAFT');
+    return st.charAt(0) + st.slice(1).toLowerCase();
+  };
+
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="px-12 py-8">
+      <div className="flex justify-between items-end pb-6 border-b border-ink mb-8">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-text">Stories</h1>
-          <p className="text-text-secondary text-sm mt-0.5">{total} total</p>
+          <div className="mono mb-1">Content</div>
+          <h1 className="font-display text-[56px] tracking-[-0.02em] leading-none font-normal">Stories</h1>
         </div>
-        <Link href="/admin/stories/new">
-          <Button>+ New Story</Button>
-        </Link>
+        <Link href="/admin/stories/new" className="btn">+ New story</Link>
+      </div>
+
+      <div className="flex gap-4 mb-6 items-center">
+        <input
+          className="flex-1 bg-transparent border border-rule px-3.5 py-2.5 font-body text-[15px] text-ink outline-none focus:border-ink transition-colors"
+          placeholder="Search by title, author..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <div className="flex border border-rule">
+          {(['all', 'published', 'draft', 'review'] as StatusFilter[]).map((f, i, arr) => (
+            <button
+              key={f}
+              onClick={() => setStatusFilter(f)}
+              className="px-3.5 py-2 font-mono text-[10px] tracking-[0.12em] uppercase cursor-pointer transition-colors"
+              style={{
+                background: statusFilter === f ? 'var(--ink)' : 'transparent',
+                color: statusFilter === f ? 'var(--paper)' : 'var(--ink-2)',
+                borderRight: i < arr.length - 1 ? '1px solid var(--rule)' : 'none',
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-16 bg-card border border-border rounded-lg animate-pulse" />
-          ))}
-        </div>
+        <div className="mono py-12 text-center text-ink-3">Loading...</div>
       ) : stories.length === 0 ? (
-        <div className="text-center py-16 text-text-secondary">No stories yet.</div>
+        <div className="py-20 text-center font-display text-[32px] italic text-ink-3">No stories found.</div>
       ) : (
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-bg">
-                <th className="text-left px-4 py-3 text-text-secondary font-medium">Title</th>
-                <th className="text-left px-4 py-3 text-text-secondary font-medium hidden md:table-cell">Author</th>
-                <th className="text-left px-4 py-3 text-text-secondary font-medium hidden sm:table-cell">Status</th>
-                <th className="text-right px-4 py-3 text-text-secondary font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stories.map((story) => (
-                <tr key={story.id} className="border-b border-border last:border-0 hover:bg-bg/50">
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-text line-clamp-1">{story.title}</p>
-                    {story.titleSomali && story.titleSomali !== story.title && (
-                      <p className="text-xs text-text-secondary">{story.titleSomali}</p>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th style={{ width: 40 }}></th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Lang</th>
+              <th>Status</th>
+              <th>Updated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {stories.map((story) => (
+              <tr key={story.id}>
+                <td><span className={`dot-status ${dotClass(story)}`} /></td>
+                <td>
+                  <div className="font-display text-[19px] leading-[1.15] text-ink">{story.title}</div>
+                  {story.titleSomali && story.titleSomali !== story.title && (
+                    <div className="font-display italic text-ink-3 text-[13px]">{story.titleSomali}</div>
+                  )}
+                </td>
+                <td className="italic text-ink-2 font-body">{story.author?.name || '—'}</td>
+                <td><span className="mono text-accent-ink text-[10px]">{story.language === 'BOTH' ? 'SO·EN' : story.language === 'SOMALI' ? 'SO' : 'EN'}</span></td>
+                <td><span className="mono text-accent-ink text-[10px]">{label(story)}</span></td>
+                <td className="mono text-ink-3 text-[10px]">{story.updatedAt ? new Date(story.updatedAt).toLocaleDateString() : '—'}</td>
+                <td className="text-right">
+                  <div className="flex gap-3 justify-end items-center">
+                    {story.isPublished && (
+                      <Link href={`/stories/${story.slug}`} target="_blank" className="mono text-ink-3 text-[10px]">View</Link>
                     )}
-                  </td>
-                  <td className="px-4 py-3 text-text-secondary hidden md:table-cell">
-                    {story.author?.name || '—'}
-                  </td>
-                  <td className="px-4 py-3 hidden sm:table-cell">
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        story.isPublished
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-border text-text-secondary'
-                      }`}
+                    <Link href={`/admin/stories/${story.id}/edit`} className="mono text-accent-ink text-[10px]">Edit</Link>
+                    <button
+                      onClick={() => handleDelete(story.id, story.title)}
+                      disabled={deleting === story.id}
+                      className="mono text-[10px] cursor-pointer bg-transparent border-none"
+                      style={{ color: 'oklch(0.52 0.18 25)' }}
                     >
-                      {story.isPublished ? 'Published' : 'Draft'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {story.isPublished && (
-                        <Link
-                          href={`/stories/${story.slug}`}
-                          target="_blank"
-                          className="text-terracotta hover:underline text-xs"
-                        >
-                          View
-                        </Link>
-                      )}
-                      <Link href={`/admin/stories/${story.id}/edit`}>
-                        <Button variant="secondary" size="sm">Edit</Button>
-                      </Link>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDelete(story.id, story.title)}
-                        disabled={deleting === story.id}
-                      >
-                        {deleting === story.id ? '…' : 'Delete'}
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      {deleting === story.id ? '...' : 'Delete'}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

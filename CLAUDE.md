@@ -4,33 +4,37 @@ A web app that collects and preserves Somali short stories scattered across the 
 
 ## Tech Stack
 
-- Frontend: Next.js (App Router), TailwindCSS
-- Backend: Express.js, Node.js (plain JS, not TypeScript)
+- Framework: Next.js (App Router) — single app for both UI and API
+- Styling: TailwindCSS
 - Database: PostgreSQL with Prisma ORM
-- Rich text editor: Tiptap (or similar) for writing stories in admin
-- Auth: JWT + bcrypt for admin only — no reader accounts
+- Rich text editor: Tiptap for writing stories in admin
+- Auth: JWT + bcryptjs for admin only — no reader accounts
 
 ## Project Structure
 
-- `backend/src/controllers/` — route handler logic
-- `backend/src/routers/` — Express route definitions
-- `backend/src/services/` — Prisma queries and business logic
-- `backend/src/middlewares/` — auth, validation, error handling
-- `backend/src/utils/` — helpers, slug generation, validation
-- `backend/src/server.js` — Express app entry point
-- `backend/prisma/` — schema and migrations
-- `frontend/` — Next.js app
+Everything lives in `frontend/`:
+
+- `frontend/app/api/` — Next.js API Route Handlers (replaces Express)
+- `frontend/app/api/admin/` — Protected admin API routes (JWT-gated)
+- `frontend/lib/services/` — Prisma queries and business logic (plain JS)
+- `frontend/lib/` — Shared utils: prisma.js, AppError.js, slug.js, sanitize.js, pagination.js
+- `frontend/lib/api-response.ts` — ok(), paginated(), err() response helpers
+- `frontend/lib/api-auth.ts` — verifyAuth() JWT middleware helper
+- `frontend/prisma/` — schema and migrations
+- `frontend/app/` — Next.js pages and layouts
+- `frontend/components/` — UI, reader, and admin components
 - `tasks/todo.md` — current task plan with checkboxes
 - `tasks/lessons.md` — accumulated corrections
 
 ## Commands
 
-- `cd backend && npm run dev` — start Express dev server
-- `cd frontend && npm run dev` — start Next.js dev server
-- `npx prisma migrate dev` — create and apply migration
-- `npx prisma generate` — regenerate client after schema change
-- `npx prisma studio` — visual database browser
-- `cd backend && npm test` — run tests
+All commands run from `frontend/`:
+
+- `npm run dev` — start Next.js dev server (serves both UI and API on port 3000)
+- `npm run db:migrate` — create and apply Prisma migration
+- `npm run db:generate` — regenerate Prisma client after schema change
+- `npm run db:studio` — visual database browser
+- `npm run db:seed` — seed the database
 
 ## Key Rules
 

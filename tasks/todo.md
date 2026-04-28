@@ -56,6 +56,29 @@
 
 ---
 
+## Phase 6: Design Overhaul ✅
+- [x] Updated `design.md` — new OKLCH color system, Instrument Serif + Newsreader + JetBrains Mono typography
+- [x] `globals.css` — new design tokens, paper grain, story-row CSS, admin table, reader styles
+- [x] `layout.tsx` — Instrument Serif, Newsreader, JetBrains Mono fonts
+- [x] `SiteHeader` — new masthead (K*ay*d + dot + mono nav)
+- [x] `SiteFooter` — archival mono footer
+- [x] New `StoryRow` component — editorial list row (№01, title/Somali, excerpt, tags, author, read time)
+- [x] `AuthorCard` — portrait (84×108px, stripe pattern, initials) + meta
+- [x] `SearchBar` — large inline editorial search
+- [x] Homepage — two-column editorial hero + stats + author grid + story list
+- [x] Stories page — editorial story list with status filter tags
+- [x] Story reader — kicker, huge display title, byline with rules, dropcap, end ornament
+- [x] Authors page — display heading + author grid
+- [x] Author detail — large portrait + story list
+- [x] Admin login — new archival card design
+- [x] Admin dashboard — stat-grid (4-col), quick actions
+- [x] Admin stories list — new table with status filter (all/published/draft/review)
+- [x] Admin nav — new light-theme sidebar with display font links
+- [x] Prisma schema — added StoryStatus enum, Story.status, Story.isFeatured, Author.era
+- [x] stories.service.js — status filter in admin list, status/isFeatured in create/update
+- [x] StoryForm — added Status dropdown (Draft/Review/Published) + Featured toggle
+- [x] **DONE**: Add `DATABASE_URL` to `.env.local` and run `npm run db:migrate` to apply schema changes
+
 ## Notes
 - Backend runs on port 5000 by default
 - All public routes under `/api/*` — no auth

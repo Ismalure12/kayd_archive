@@ -14,7 +14,17 @@
       "Bash(pdftotext \"C:/Users/hp/Desktop/projects/Kayd Archive/Ibraahin-Hawd/Sheeko.pdf\" -)",
       "Bash(npm run:*)",
       "Bash(start http://localhost:3000)",
-      "Bash(start:*)"
+      "Bash(start:*)",
+      "Read(//c/Users/hp/Desktop/**)",
+      "Bash(ls kayd-handoff.zip)",
+      "Bash(unzip -o kayd-handoff.zip -d kayd-handoff-extracted/)",
+      "Bash(npx tsc *)",
+      "Bash(npx prisma *)",
+      "Bash(curl *)",
+      "PowerShell(Stop-Process *)",
+      "Bash(npx next *)",
+      "Bash(unzip -l kayd-handoff.zip)",
+      "Bash(unzip -o kayd-handoff.zip -d kayd-handoff)"
     ]
   }
 }

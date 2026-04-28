@@ -20,7 +20,7 @@ interface Story {
 
 export function StoryCard({ story }: { story: Story }) {
   return (
-    <article className="bg-card border border-border flex flex-col hover:shadow-sm transition-shadow">
+    <article className="bg-paper-2 border border-rule flex flex-col hover:bg-paper-3 transition-colors">
       {story.coverImageUrl && (
         <Link href={`/stories/${story.slug}`} className="block aspect-[16/9] overflow-hidden">
           <Image
@@ -38,11 +38,7 @@ export function StoryCard({ story }: { story: Story }) {
         {story.tags && story.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {story.tags.slice(0, 3).map(({ tag }) => (
-              <Link
-                key={tag.slug}
-                href={`/stories?tag=${tag.slug}`}
-                className="text-xs px-2.5 py-0.5 rounded-full border border-terracotta text-terracotta hover:bg-terracotta/10 transition-colors"
-              >
+              <Link key={tag.slug} href={`/stories?tag=${tag.slug}`} className="tag">
                 {tag.name}
               </Link>
             ))}
@@ -51,28 +47,27 @@ export function StoryCard({ story }: { story: Story }) {
 
         <div>
           <Link href={`/stories/${story.slug}`}>
-            <h3 className="font-serif text-lg font-semibold text-text leading-snug hover:text-terracotta transition-colors line-clamp-2">
+            <h3 className="font-display text-[20px] leading-[1.15] text-ink hover:text-accent-ink transition-colors line-clamp-2">
               {story.title}
             </h3>
           </Link>
           {story.titleSomali && story.titleSomali !== story.title && (
-            <p className="text-sm text-text-secondary font-serif mt-0.5 italic">{story.titleSomali}</p>
+            <p className="font-display italic text-[14px] text-ink-3 mt-0.5">{story.titleSomali}</p>
           )}
         </div>
 
         {story.description && (
-          <p className="text-sm text-text-secondary leading-relaxed line-clamp-2">
+          <p className="font-body text-[14px] text-ink-2 leading-[1.5] line-clamp-2">
             {story.description}
           </p>
         )}
 
-        {/* Author + reading time — small-caps style */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
+        {/* Author + reading time */}
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-rule">
           {story.author ? (
             <Link
               href={`/authors/${story.author.slug}`}
-              className="text-xs font-medium text-text-secondary hover:text-terracotta transition-colors tracking-wide uppercase"
-              style={{ fontVariant: 'small-caps' }}
+              className="font-mono text-[10px] text-ink-2 hover:text-accent-ink transition-colors tracking-[0.12em] uppercase"
             >
               {story.author.name}
             </Link>
@@ -80,7 +75,7 @@ export function StoryCard({ story }: { story: Story }) {
             <span />
           )}
           {story.readingTime && (
-            <span className="text-xs text-muted">{story.readingTime} min</span>
+            <span className="font-mono text-[10px] text-ink-3">{story.readingTime} min</span>
           )}
         </div>
       </div>

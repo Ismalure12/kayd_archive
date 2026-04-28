@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { adminApi } from '@/lib/api';
-import { Button } from '@/components/ui/Button';
 
 export default function AdminCollectionsPage() {
   const [collections, setCollections] = useState<any[]>([]);
@@ -38,82 +37,73 @@ export default function AdminCollectionsPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="px-12 py-8">
+      <div className="flex justify-between items-end pb-6 border-b border-ink mb-8">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-text">Collections</h1>
-          <p className="text-text-secondary text-sm mt-0.5">{total} total</p>
+          <div className="mono mb-1">Content</div>
+          <h1 className="font-display text-[56px] tracking-[-0.02em] leading-none font-normal">
+            Collections
+            <span className="mono text-[14px] text-ink-3 ml-4 tracking-[0.1em]">{total} total</span>
+          </h1>
         </div>
-        <Link href="/admin/collections/new">
-          <Button>+ New Collection</Button>
-        </Link>
+        <Link href="/admin/collections/new" className="btn">+ New collection</Link>
       </div>
 
       {loading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-16 bg-card border border-border rounded-lg animate-pulse" />
-          ))}
-        </div>
+        <div className="mono py-12 text-center text-ink-3">Loading...</div>
       ) : collections.length === 0 ? (
-        <div className="text-center py-16 text-text-secondary">No collections yet.</div>
+        <div className="py-20 text-center font-display text-[32px] italic text-ink-3">No collections yet.</div>
       ) : (
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-bg">
-                <th className="text-left px-4 py-3 text-text-secondary font-medium">Title</th>
-                <th className="text-left px-4 py-3 text-text-secondary font-medium hidden sm:table-cell">Stories</th>
-                <th className="text-left px-4 py-3 text-text-secondary font-medium hidden md:table-cell">Featured</th>
-                <th className="text-right px-4 py-3 text-text-secondary font-medium">Actions</th>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th className="hidden sm:table-cell">Stories</th>
+              <th className="hidden md:table-cell">Featured</th>
+              <th className="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {collections.map((col) => (
+              <tr key={col.id}>
+                <td>
+                  <div className="font-display text-[17px] text-ink">{col.title}</div>
+                  {col.titleSomali && col.titleSomali !== col.title && (
+                    <div className="font-display italic text-ink-3 text-[13px]">{col.titleSomali}</div>
+                  )}
+                </td>
+                <td className="mono text-ink-3 text-[10px] hidden sm:table-cell">
+                  {col._count?.stories || 0}
+                </td>
+                <td className="hidden md:table-cell">
+                  {col.isFeatured ? (
+                    <span className="mono text-[10px] text-accent-ink">Featured</span>
+                  ) : (
+                    <span className="mono text-[10px] text-ink-3">—</span>
+                  )}
+                </td>
+                <td className="text-right">
+                  <div className="flex items-center justify-end gap-3">
+                    <Link href={`/collections/${col.slug}`} target="_blank" className="mono text-ink-3 text-[10px]">
+                      View
+                    </Link>
+                    <Link href={`/admin/collections/${col.id}/edit`} className="mono text-accent-ink text-[10px]">
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(col.id, col.title)}
+                      disabled={deleting === col.id}
+                      className="mono text-[10px] cursor-pointer bg-transparent border-none"
+                      style={{ color: 'oklch(0.52 0.18 25)' }}
+                    >
+                      {deleting === col.id ? '…' : 'Delete'}
+                    </button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {collections.map((col) => (
-                <tr key={col.id} className="border-b border-border last:border-0 hover:bg-bg/50">
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-text">{col.title}</p>
-                    {col.titleSomali && col.titleSomali !== col.title && (
-                      <p className="text-xs text-text-secondary">{col.titleSomali}</p>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-text-secondary hidden sm:table-cell">
-                    {col._count?.stories || 0}
-                  </td>
-                  <td className="px-4 py-3 hidden md:table-cell">
-                    {col.isFeatured ? (
-                      <span className="text-xs text-terracotta font-medium">Featured</span>
-                    ) : (
-                      <span className="text-xs text-muted">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/collections/${col.slug}`}
-                        target="_blank"
-                        className="text-terracotta hover:underline text-xs"
-                      >
-                        View
-                      </Link>
-                      <Link href={`/admin/collections/${col.id}/edit`}>
-                        <Button variant="secondary" size="sm">Edit</Button>
-                      </Link>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDelete(col.id, col.title)}
-                        disabled={deleting === col.id}
-                      >
-                        {deleting === col.id ? '…' : 'Delete'}
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

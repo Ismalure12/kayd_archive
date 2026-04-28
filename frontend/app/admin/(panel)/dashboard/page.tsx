@@ -13,20 +13,6 @@ interface Stats {
   totalViews: number;
 }
 
-function StatCard({ label, value, href }: { label: string; value: number; href: string }) {
-  return (
-    <Link
-      href={href}
-      className="bg-card border border-border rounded-lg p-6 hover:shadow-sm transition-shadow group"
-    >
-      <p className="text-3xl font-serif font-bold text-text group-hover:text-terracotta transition-colors">
-        {value.toLocaleString()}
-      </p>
-      <p className="text-sm text-text-secondary mt-1">{label}</p>
-    </Link>
-  );
-}
-
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState('');
@@ -38,58 +24,64 @@ export default function DashboardPage() {
       .catch((err: any) => setError(err.message));
   }, []);
 
+  const statItems = stats
+    ? [
+        { label: 'Stories', val: stats.stories, sub: `${stats.publishedStories} published`, href: '/admin/stories' },
+        { label: 'Authors', val: stats.authors, sub: 'In the archive', href: '/admin/authors' },
+        { label: 'Collections', val: stats.collections, sub: 'Curated sets', href: '/admin/collections' },
+        { label: 'Total views', val: stats.totalViews.toLocaleString(), sub: 'All time', href: '/admin/stories' },
+      ]
+    : null;
+
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="font-serif text-2xl font-bold text-text">Dashboard</h1>
-        <p className="text-text-secondary mt-1 text-sm">Archive overview</p>
+    <div className="px-12 py-8">
+      {/* Page head */}
+      <div className="flex justify-between items-end pb-6 border-b border-ink mb-12">
+        <div>
+          <div className="mono mb-1">Overview</div>
+          <h1 className="font-display text-[56px] tracking-[-0.02em] leading-none font-normal">
+            Dashboard
+          </h1>
+        </div>
+        <Link href="/admin/stories/new" className="btn">+ New story</Link>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm mb-6">
+        <div className="mono text-[10px] mb-8" style={{ color: 'oklch(0.52 0.18 25)' }}>
           {error}
         </div>
       )}
 
-      {stats ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-          <StatCard label="Authors" value={stats.authors} href="/admin/authors" />
-          <StatCard label="Total Stories" value={stats.stories} href="/admin/stories" />
-          <StatCard label="Published" value={stats.publishedStories} href="/admin/stories" />
-          <StatCard label="Collections" value={stats.collections} href="/admin/collections" />
-          <StatCard label="Tags" value={stats.tags} href="/admin/tags" />
-          <StatCard label="Total Views" value={stats.totalViews} href="/admin/stories" />
+      {/* Stat grid */}
+      {statItems ? (
+        <div className="stat-grid">
+          {statItems.map((s) => (
+            <Link key={s.label} href={s.href} className="no-underline">
+              <div className="stat-card">
+                <div className="mono">{s.label}</div>
+                <div className="stat-val">{s.val}</div>
+                <div className="mono text-[10px] text-ink-3">{s.sub}</div>
+              </div>
+            </Link>
+          ))}
         </div>
       ) : !error ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-card border border-border rounded-lg p-6">
-              <div className="h-8 w-16 bg-border rounded animate-pulse" />
-              <div className="h-4 w-24 bg-border rounded animate-pulse mt-2" />
+        <div className="stat-grid">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="stat-card animate-pulse">
+              <div className="h-2.5 w-15 bg-rule mb-3" />
+              <div className="h-12 w-20 bg-rule" />
             </div>
           ))}
         </div>
       ) : null}
 
-      <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          href="/admin/stories/new"
-          className="px-4 py-2 bg-terracotta text-white rounded-lg text-sm font-medium hover:bg-terracotta-dark transition-colors"
-        >
-          + New Story
-        </Link>
-        <Link
-          href="/admin/authors/new"
-          className="px-4 py-2 bg-card border border-border text-text rounded-lg text-sm font-medium hover:bg-bg transition-colors"
-        >
-          + New Author
-        </Link>
-        <Link
-          href="/admin/collections/new"
-          className="px-4 py-2 bg-card border border-border text-text rounded-lg text-sm font-medium hover:bg-bg transition-colors"
-        >
-          + New Collection
-        </Link>
+      {/* Quick actions */}
+      <div className="mt-12 flex gap-3 flex-wrap">
+        <Link href="/admin/stories/new" className="btn">+ New story</Link>
+        <Link href="/admin/authors/new" className="btn ghost">+ New author</Link>
+        <Link href="/admin/collections/new" className="btn ghost">+ New collection</Link>
+        <Link href="/" className="btn ghost">View archive ⟶</Link>
       </div>
     </div>
   );

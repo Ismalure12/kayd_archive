@@ -1,59 +1,462 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@theme {
-  /* Colors */
-  --color-bg: #F5F0E8;
-  --color-card: #FAF7F2;
-  --color-terracotta: #C4633E;
-  --color-terracotta-dark: #A8502D;
-  --color-terracotta-light: #F5E8E2;
-  --color-text: #2C2420;
-  --color-text-secondary: #6B5E54;
-  --color-muted: #A69B91;
-  --color-border: #DDD5CA;
-  --color-dark-bg: #1C1917;
-  --color-dark-card: #2A2420;
+/* ==========================================================================
+   Kayd Design Tokens — OKLCH color system
+   ========================================================================== */
 
-  /* Fonts */
-  --font-serif: var(--font-lora), Georgia, serif;
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+@theme {
+  /* Archival palette */
+  --color-paper:       oklch(0.965 0.012 78);
+  --color-paper-2:     oklch(0.935 0.018 78);
+  --color-paper-3:     oklch(0.895 0.022 78);
+  --color-ink:         oklch(0.20 0.015 60);
+  --color-ink-2:       oklch(0.35 0.015 60);
+  --color-ink-3:       oklch(0.55 0.015 60);
+  --color-rule:        oklch(0.82 0.018 70);
+  --color-rule-soft:   oklch(0.88 0.015 70);
+  --color-accent:      oklch(0.62 0.14 55);
+  --color-accent-ink:  oklch(0.38 0.12 50);
+  --color-accent-wash: oklch(0.93 0.04 70);
+
+  /* Legacy aliases — so old class names (bg-card, text-text, etc.) still work */
+  --color-bg:               oklch(0.965 0.012 78);
+  --color-card:             oklch(0.935 0.018 78);
+  --color-terracotta:       oklch(0.62 0.14 55);
+  --color-terracotta-dark:  oklch(0.38 0.12 50);
+  --color-terracotta-light: oklch(0.93 0.04 70);
+  --color-text:             oklch(0.20 0.015 60);
+  --color-text-secondary:   oklch(0.35 0.015 60);
+  --color-muted:            oklch(0.55 0.015 60);
+  --color-border:           oklch(0.82 0.018 70);
+  --color-dark-bg:          oklch(0.18 0.012 70);
+  --color-dark-card:        oklch(0.22 0.012 70);
+
+  /* Typefaces */
+  --font-display: "Instrument Serif", "Times New Roman", serif;
+  --font-body:    "Newsreader", Georgia, serif;
+  --font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --font-serif:   "Instrument Serif", Georgia, serif;
+  --font-sans:    "Newsreader", Georgia, serif;
 }
+
+/* ==========================================================================
+   Runtime CSS vars — aliased to @theme tokens so dark mode works
+   for both Tailwind utility classes AND inline style={{ var(--ink) }} usage
+   ========================================================================== */
 
 :root {
-  --background: #F5F0E8;
-  --foreground: #2C2420;
+  --paper:       var(--color-paper);
+  --paper-2:     var(--color-paper-2);
+  --paper-3:     var(--color-paper-3);
+  --ink:         var(--color-ink);
+  --ink-2:       var(--color-ink-2);
+  --ink-3:       var(--color-ink-3);
+  --rule:        var(--color-rule);
+  --rule-soft:   var(--color-rule-soft);
+  --accent:      var(--color-accent);
+  --accent-ink:  var(--color-accent-ink);
+  --accent-wash: var(--color-accent-wash);
+
+  --ff-display:  var(--font-display);
+  --ff-body:     var(--font-body);
+  --ff-mono:     var(--font-mono);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+/* ==========================================================================
+   Dark theme — overrides @theme tokens; :root aliases cascade automatically
+   ========================================================================== */
+
+[data-theme="dark"] {
+  --color-paper:       oklch(0.18 0.012 70);
+  --color-paper-2:     oklch(0.22 0.012 70);
+  --color-paper-3:     oklch(0.26 0.012 70);
+  --color-ink:         oklch(0.93 0.012 78);
+  --color-ink-2:       oklch(0.78 0.012 78);
+  --color-ink-3:       oklch(0.62 0.012 78);
+  --color-rule:        oklch(0.34 0.015 70);
+  --color-rule-soft:   oklch(0.28 0.015 70);
+  --color-accent:      oklch(0.72 0.13 55);
+  --color-accent-ink:  oklch(0.82 0.11 55);
+  --color-accent-wash: oklch(0.28 0.06 60);
+
+  /* Legacy alias overrides */
+  --color-bg:               oklch(0.18 0.012 70);
+  --color-card:             oklch(0.22 0.012 70);
+  --color-text:             oklch(0.93 0.012 78);
+  --color-text-secondary:   oklch(0.78 0.012 78);
+  --color-muted:            oklch(0.62 0.012 78);
+  --color-border:           oklch(0.34 0.015 70);
+  --color-terracotta:       oklch(0.72 0.13 55);
+  --color-terracotta-dark:  oklch(0.82 0.11 55);
+  --color-terracotta-light: oklch(0.28 0.06 60);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ff-body);
+  font-size: 17px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "kern", "liga", "onum";
+  min-height: 100vh;
 }
 
-/* Prose overrides for story reader */
-.prose {
-  --tw-prose-body: #2C2420;
-  --tw-prose-headings: #2C2420;
-  --tw-prose-links: #C4633E;
-  --tw-prose-bold: #2C2420;
-  --tw-prose-counters: #6B5E54;
-  --tw-prose-bullets: #A69B91;
-  --tw-prose-hr: #DDD5CA;
-  --tw-prose-quotes: #2C2420;
-  --tw-prose-quote-borders: #C4633E;
-  --tw-prose-captions: #6B5E54;
+/* Subtle paper grain */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.12  0 0 0 0 0.08  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+[data-theme="dark"] body::before { mix-blend-mode: screen; opacity: 0.2; }
+
+/* Author card hover */
+.author-card-hover:hover { background: var(--paper-2); }
+
+/* Nav link hover */
+.nav-link { color: var(--ink-2); padding: 2px 0; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
+.nav-link:hover { color: var(--ink); }
+.nav-link.active { color: var(--ink); border-bottom-color: var(--accent); }
+.nav-link-muted { color: var(--ink-3); transition: color .2s; }
+.nav-link-muted:hover { color: var(--ink); }
+
+/* Footer link hover */
+.foot-link { color: var(--ink-3); transition: color .15s; }
+.foot-link:hover { color: var(--ink); }
+
+/* Admin nav link hover */
+.admin-nav-link-item:hover { background: var(--paper-3) !important; color: var(--ink) !important; }
+
+/* ==========================================================================
+   Typography utilities
+   ========================================================================== */
+
+.mono {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
-/* Drop cap — first letter of first paragraph in story body */
+.display {
+  font-family: var(--ff-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+/* ==========================================================================
+   Story row — editorial list card
+   ========================================================================== */
+
+.story-list { display: flex; flex-direction: column; }
+.story-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 180px 90px;
+  gap: 24px;
+  align-items: baseline;
+  padding: 24px 0;
+  border-top: 1px solid var(--rule-soft);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.story-row:first-child { border-top: none; }
+.story-row:hover { background: var(--paper-2); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+
+@media (max-width: 900px) {
+  .story-row {
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+  }
+  .story-row .story-row-author,
+  .story-row .story-row-read { display: none; }
+}
+
+/* ==========================================================================
+   Author portrait
+   ========================================================================== */
+
+.portrait {
+  width: 84px;
+  height: 108px;
+  background: var(--paper-3);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+}
+.portrait::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 8px,
+    color-mix(in oklch, var(--ink) 8%, transparent) 8px 9px
+  );
+}
+.portrait-initials {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff-display);
+  font-size: 32px;
+  color: var(--ink-2);
+  font-style: italic;
+  mix-blend-mode: multiply;
+}
+
+/* ==========================================================================
+   Search bar — editorial inline
+   ========================================================================== */
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: 16px 0;
+}
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--ff-display);
+  font-size: clamp(24px, 3.5vw, 40px);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.search-bar input::placeholder {
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Section header
+   ========================================================================== */
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink);
+}
+.section-head h2 {
+  font-family: var(--ff-display);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   Tag chips
+   ========================================================================== */
+
+.tag {
+  display: inline-flex;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  transition: all 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tag:hover { border-color: var(--ink-2); color: var(--ink); }
+.tag.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tag.lang { border-color: var(--accent); color: var(--accent-ink); }
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.btn:hover { background: var(--accent-ink); border-color: var(--accent-ink); color: var(--paper); }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: var(--paper); }
+
+/* ==========================================================================
+   Reader page
+   ========================================================================== */
+
+.reader {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 64px 24px 96px;
+}
+
 .story-body > p:first-child::first-letter {
   float: left;
-  font-family: var(--font-serif);
-  font-size: 4.5rem;
-  font-weight: 700;
-  line-height: 0.75;
-  margin-right: 0.1em;
-  margin-top: 0.05em;
-  color: #C4633E;
+  font-family: var(--ff-display);
+  font-size: 5.2rem;
+  font-weight: 400;
+  line-height: 0.78;
+  margin-right: 0.12em;
+  margin-top: 0.06em;
+  color: var(--accent-ink);
+  font-style: normal;
+}
+
+.story-body p {
+  font-family: var(--ff-body);
+  font-size: 19px;
+  line-height: 1.7;
+  margin-bottom: 1.3em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+/* ==========================================================================
+   Admin shell
+   ========================================================================== */
+
+.admin-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+@media (max-width: 900px) {
+  .admin-shell { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   Admin table
+   ========================================================================== */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.admin-table th {
+  text-align: left;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ink);
+  font-weight: 400;
+}
+.admin-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: middle;
+}
+.admin-table tbody tr { transition: background 0.1s; }
+.admin-table tbody tr:hover { background: var(--paper-2); }
+
+/* ==========================================================================
+   Dot status indicator
+   ========================================================================== */
+
+.dot-status {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+.dot-status.published { background: var(--accent); }
+.dot-status.review { background: oklch(0.72 0.13 55); }
+
+/* ==========================================================================
+   Stat grid (admin dashboard)
+   ========================================================================== */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-bottom: 48px;
+}
+.stat-card {
+  background: var(--paper);
+  padding: 24px;
+}
+.stat-val {
+  font-family: var(--ff-display);
+  font-size: 48px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 8px 0 6px;
+  color: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ==========================================================================
+   Responsive helpers
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .hero-grid-responsive { grid-template-columns: 1fr !important; }
+  .author-grid-responsive { grid-template-columns: repeat(2, 1fr) !important; }
+  .author-detail-grid-responsive { grid-template-columns: 1fr !important; }
+  .admin-shell { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .author-grid-responsive { grid-template-columns: 1fr !important; }
+}
+
+/* ==========================================================================
+   Prose overrides
+   ========================================================================== */
+
+.prose {
+  --tw-prose-body:         var(--ink);
+  --tw-prose-headings:     var(--ink);
+  --tw-prose-links:        var(--accent);
+  --tw-prose-bold:         var(--ink);
+  --tw-prose-counters:     var(--ink-2);
+  --tw-prose-bullets:      var(--ink-3);
+  --tw-prose-hr:           var(--rule);
+  --tw-prose-quotes:       var(--ink);
+  --tw-prose-quote-borders:var(--accent);
+  --tw-prose-captions:     var(--ink-2);
 }

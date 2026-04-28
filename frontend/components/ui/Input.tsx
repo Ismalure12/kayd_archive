@@ -9,16 +9,16 @@ export function Input({ label, error, className = '', id, ...props }: InputProps
   return (
     <div className="flex flex-col gap-1">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-text">
+        <label htmlFor={id} className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">
           {label}
         </label>
       )}
       <input
         id={id}
-        className={`w-full px-3 py-2 text-sm bg-card border rounded-lg text-text placeholder:text-muted
-          focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+        className={`w-full px-3 py-2 text-sm bg-paper-2 border text-ink placeholder:text-ink-3
+          focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink
           disabled:opacity-50 disabled:cursor-not-allowed
-          ${error ? 'border-red-500' : 'border-border'}
+          ${error ? 'border-red-500' : 'border-rule'}
           ${className}`}
         {...props}
       />
@@ -36,16 +36,16 @@ export function Textarea({ label, error, className = '', id, ...props }: Textare
   return (
     <div className="flex flex-col gap-1">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-text">
+        <label htmlFor={id} className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">
           {label}
         </label>
       )}
       <textarea
         id={id}
-        className={`w-full px-3 py-2 text-sm bg-card border rounded-lg text-text placeholder:text-muted
-          focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+        className={`w-full px-3 py-2 text-sm bg-paper-2 border text-ink placeholder:text-ink-3
+          focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink
           disabled:opacity-50 resize-y min-h-24
-          ${error ? 'border-red-500' : 'border-border'}
+          ${error ? 'border-red-500' : 'border-rule'}
           ${className}`}
         {...props}
       />
@@ -64,16 +64,16 @@ export function Select({ label, error, options, className = '', id, ...props }: 
   return (
     <div className="flex flex-col gap-1">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-text">
+        <label htmlFor={id} className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">
           {label}
         </label>
       )}
       <select
         id={id}
-        className={`w-full px-3 py-2 text-sm bg-card border rounded-lg text-text
-          focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+        className={`w-full px-3 py-2 text-sm bg-paper-2 border text-ink
+          focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink
           disabled:opacity-50 cursor-pointer
-          ${error ? 'border-red-500' : 'border-border'}
+          ${error ? 'border-red-500' : 'border-rule'}
           ${className}`}
         {...props}
       >

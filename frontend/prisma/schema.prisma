@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  EDITOR
+}
+
+enum Language {
+  SOMALI
+  ENGLISH
+  BOTH
+}
+
+enum StoryStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+}
+
+model Admin {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         AdminRole @default(EDITOR)
+  createdAt    DateTime  @default(now())
+}
+
+model Author {
+  id         String   @id @default(uuid())
+  name       String
+  nameSomali String?
+  bio        String?  @db.Text
+  photoUrl   String?
+  slug       String   @unique
+  birthYear  Int?
+  deathYear  Int?
+  era        String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  stories    Story[]
+}
+
+model Story {
+  id            String            @id @default(uuid())
+  authorId      String
+  author        Author            @relation(fields: [authorId], references: [id])
+  title         String
+  titleSomali   String?
+  description   String?           @db.Text
+  slug          String            @unique
+  content       String            @db.Text
+  coverImageUrl String?
+  readingTime   Int?
+  language      Language          @default(SOMALI)
+  publishedDate DateTime?
+  isPublished   Boolean           @default(false)
+  status        StoryStatus       @default(DRAFT)
+  isFeatured    Boolean           @default(false)
+  viewCount     Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  tags          StoryTag[]
+  collections   CollectionStory[]
+}
+
+model Tag {
+  id      String     @id @default(uuid())
+  name    String     @unique
+  slug    String     @unique
+  stories StoryTag[]
+}
+
+model StoryTag {
+  storyId String
+  tagId   String
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([storyId, tagId])
+  @@map("story_tags")
+}
+
+model Collection {
+  id            String            @id @default(uuid())
+  title         String
+  description   String?           @db.Text
+  slug          String            @unique
+  coverImageUrl String?
+  isFeatured    Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  stories       CollectionStory[]
+}
+
+model CollectionStory {
+  collectionId String
+  storyId      String
+  sortOrder    Int        @default(0)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  story        Story      @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, storyId])
+  @@map("collection_stories")
+}
+
+model Murti {
+  id               String      @id @default(uuid())
+  title            String
+  titleTranslation String?
+  context          String      @db.Text
+  narrator         String?
+  narratorLocation String?
+  slug             String      @unique
+  status           StoryStatus @default(DRAFT)
+  isPublished      Boolean     @default(false)
+  publishedDate    DateTime?
+  isFeatured       Boolean     @default(false)
+  viewCount        Int         @default(0)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}

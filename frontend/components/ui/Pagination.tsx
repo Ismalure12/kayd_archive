@@ -27,7 +27,7 @@ export function Pagination({ page, totalPages, buildHref }: PaginationProps) {
       {page > 1 && (
         <Link
           href={buildHref(page - 1)}
-          className="px-3 py-2 text-sm rounded-lg text-text-secondary hover:bg-card border border-border transition-colors"
+          className="px-3 py-2 font-mono text-[11px] text-ink-2 hover:bg-paper-2 border border-rule transition-colors"
           aria-label="Previous page"
         >
           ←
@@ -36,17 +36,17 @@ export function Pagination({ page, totalPages, buildHref }: PaginationProps) {
 
       {withEllipsis.map((p, i) =>
         p === 'ellipsis' ? (
-          <span key={`e-${i}`} className="px-3 py-2 text-muted text-sm">
+          <span key={`e-${i}`} className="px-3 py-2 text-ink-3 font-mono text-[11px]">
             …
           </span>
         ) : (
           <Link
             key={p}
             href={buildHref(p)}
-            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+            className={`px-3 py-2 font-mono text-[11px] transition-colors ${
               p === page
-                ? 'bg-terracotta text-white'
-                : 'text-text-secondary hover:bg-card border border-border'
+                ? 'bg-ink text-paper border border-ink'
+                : 'text-ink-2 hover:bg-paper-2 border border-rule'
             }`}
             aria-current={p === page ? 'page' : undefined}
           >
@@ -58,7 +58,7 @@ export function Pagination({ page, totalPages, buildHref }: PaginationProps) {
       {page < totalPages && (
         <Link
           href={buildHref(page + 1)}
-          className="px-3 py-2 text-sm rounded-lg text-text-secondary hover:bg-card border border-border transition-colors"
+          className="px-3 py-2 font-mono text-[11px] text-ink-2 hover:bg-paper-2 border border-rule transition-colors"
           aria-label="Next page"
         >
           →

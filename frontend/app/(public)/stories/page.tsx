@@ -1,29 +1,40 @@
 import type { Metadata } from 'next';
-import { StoryCardC } from '@/components/reader/StoryCardC';
+import { StoryRow } from '@/components/reader/StoryRow';
+import { SearchBar } from '@/components/reader/SearchBar';
 import { Pagination } from '@/components/ui/Pagination';
-import { TagPill } from '@/components/reader/TagPill';
 
 export const metadata: Metadata = {
   title: 'Stories',
   description: 'Browse the full collection of Somali short stories.',
 };
 
-async function getData(searchParams: Record<string, string>) {
-  const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-  const params = new URLSearchParams({
-    page: searchParams.page || '1',
-    limit: '12',
-    ...(searchParams.tag && { tag: searchParams.tag }),
-    ...(searchParams.language && { language: searchParams.language }),
-  });
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { listStories } = require('@/lib/services/stories.service');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { listTags } = require('@/lib/services/tags.service');
 
-  const [storiesRes, tagsRes] = await Promise.all([
-    fetch(`${API}/stories?${params}`, { next: { revalidate: 60 } }),
-    fetch(`${API}/tags`, { next: { revalidate: 3600 } }),
+async function getData(searchParams: Record<string, string>) {
+  const page = Math.max(1, parseInt(searchParams.page) || 1);
+  const limit = 20;
+  const skip = (page - 1) * limit;
+
+  const [storiesData, tagsData] = await Promise.all([
+    listStories({
+      page, limit, skip,
+      tag: searchParams.tag,
+      language: searchParams.language,
+    }),
+    listTags(),
   ]);
 
-  const [stories, tags] = await Promise.all([storiesRes.json(), tagsRes.json()]);
-  return { stories, tags };
+  return {
+    stories: {
+      data: storiesData.stories,
+      total: storiesData.total,
+      totalPages: Math.ceil(storiesData.total / limit),
+    },
+    tags: { data: tagsData },
+  };
 }
 
 interface PageProps {
@@ -37,6 +48,7 @@ export default async function StoriesPage({ searchParams }: PageProps) {
   const page = parseInt(sp.page || '1');
   const totalPages = stories?.totalPages || 1;
   const activeTag = sp.tag;
+  const total = stories?.total || 0;
 
   function buildHref(p: number) {
     const params = new URLSearchParams({ page: String(p) });
@@ -45,36 +57,31 @@ export default async function StoriesPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-text">Stories</h1>
-        <p className="text-text-secondary mt-2">
-          {stories?.total || 0} stories in the archive
-        </p>
+    <div className="max-w-[1240px] mx-auto px-8 sm:px-6 pt-12">
+      {/* Page header */}
+      <div className="mb-6">
+        <div className="mono mb-3">The Archive</div>
+        <h1
+          className="font-display font-normal leading-[0.95] tracking-[-0.025em] mb-6"
+          style={{ fontSize: 'clamp(48px, 7vw, 88px)' }}
+        >
+          All{' '}
+          <em className="italic text-accent-ink">stories</em>
+        </h1>
+        <SearchBar defaultValue={sp.q} />
       </div>
 
-      {/* Tags filter */}
+      {/* Tag filter */}
       {tags?.data && tags.data.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
-          <a
-            href="/stories"
-            className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${
-              !activeTag
-                ? 'bg-terracotta text-white'
-                : 'bg-terracotta-light text-terracotta border border-terracotta/30 hover:bg-transparent hover:border-terracotta'
-            }`}
-          >
+        <div className="flex flex-wrap gap-2 py-4">
+          <a href="/stories" className={'tag' + (!activeTag ? ' active' : '')}>
             All
           </a>
           {tags.data.map((tag: any) => (
             <a
               key={tag.slug}
               href={`/stories?tag=${tag.slug}`}
-              className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${
-                activeTag === tag.slug
-                  ? 'bg-terracotta text-white'
-                  : 'bg-terracotta-light text-terracotta border border-terracotta/30 hover:bg-transparent hover:border-terracotta'
-              }`}
+              className={'tag' + (activeTag === tag.slug ? ' active' : '')}
             >
               {tag.name}
             </a>
@@ -82,18 +89,32 @@ export default async function StoriesPage({ searchParams }: PageProps) {
         </div>
       )}
 
+      {/* Story list */}
       {stories?.data && stories.data.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stories.data.map((story: any) => (
-              <StoryCardC key={story.slug} story={story} />
+          <div className="flex justify-between items-baseline mb-2 pb-3 border-b border-ink font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3">
+            <span>Stories</span>
+            <span>{total} total</span>
+          </div>
+          <div className="story-list">
+            {stories.data.map((story: any, i: number) => (
+              <StoryRow
+                key={story.slug}
+                story={story}
+                index={(page - 1) * 20 + i}
+              />
             ))}
           </div>
-          <Pagination page={page} totalPages={totalPages} buildHref={buildHref} />
+          <div className="py-8">
+            <Pagination page={page} totalPages={totalPages} buildHref={buildHref} />
+          </div>
         </>
       ) : (
-        <div className="text-center py-20">
-          <p className="text-text-secondary">No stories found.</p>
+        <div className="py-20 text-center text-ink-3">
+          <div className="font-display text-[40px] italic mb-3">Nothing found.</div>
+          <div className="font-mono text-[11px] tracking-[0.1em]">
+            Try a different search term or remove some filters.
+          </div>
         </div>
       )}
     </div>
